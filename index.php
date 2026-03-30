@@ -76,6 +76,24 @@ if ($uri === "/students" && $method === "DELETE") {
     (new StudentController())->delete();
     exit;
 }
+// ================= STAFF =================
+if ($uri === "/staff" && $method === "GET") {
+    require_once "controllers/StaffController.php";
+    (new StaffController())->index();
+    exit;
+}
+
+if ($uri === "/staff" && $method === "POST") {
+    require_once "controllers/StaffController.php";
+    (new StaffController())->store();
+    exit;
+}
+
+if ($uri === "/staff" && $method === "DELETE") {
+    require_once "controllers/StaffController.php";
+    (new StaffController())->delete();
+    exit;
+}
 // ================= FALLBACK =================
 echo json_encode([
     "status" => false,
