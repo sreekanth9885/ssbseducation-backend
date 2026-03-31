@@ -1,4 +1,9 @@
 <?php
+require_once "controllers/NotificationController.php";
+require_once "controllers/StaffController.php";
+require_once "controllers/StudentController.php";
+require_once "controllers/CourseController.php";
+
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
@@ -100,6 +105,33 @@ if ($uri === "/staff" && $method === "DELETE") {
     (new StaffController())->delete();
     exit;
 }
+
+// ================= NOTIFICATIONS =================
+
+if ($uri === "/notifications" && $method === "GET") {
+    (new NotificationController())->index();
+    exit;
+}
+
+if ($uri === "/notifications" && $method === "POST") {
+    (new NotificationController())->store();
+    exit;
+}
+
+if (preg_match("/^\/notifications\/(\d+)$/", $uri, $matches)) {
+    $id = $matches[1];
+
+    if ($method === "PUT") {
+        (new NotificationController())->update($id);
+        exit;
+    }
+
+    if ($method === "DELETE") {
+        (new NotificationController())->delete($id);
+        exit;
+    }
+}
+
 // ================= FALLBACK =================
 echo json_encode([
     "status" => false,

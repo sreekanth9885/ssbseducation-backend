@@ -6,17 +6,19 @@ class Database {
     private $password = "9885@Sreekanth";
 
     public function connect() {
-        $conn = new mysqli(
-            $this->host,
-            $this->username,
-            $this->password,
-            $this->db_name
-        );
+        try {
+            $conn = new PDO(
+                "mysql:host={$this->host};dbname={$this->db_name};charset=utf8",
+                $this->username,
+                $this->password
+            );
 
-        if ($conn->connect_error) {
-            die("DB Connection failed");
+            $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+            return $conn;
+
+        } catch (PDOException $e) {
+            die("DB Connection failed: " . $e->getMessage());
         }
-
-        return $conn;
     }
 }
