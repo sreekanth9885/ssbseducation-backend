@@ -89,6 +89,12 @@ if ($uri === "/staff" && $method === "POST") {
     exit;
 }
 
+if ($uri === "/staff" && $method === "PUT") {
+    require_once "controllers/StaffController.php";
+    (new StaffController())->store();
+    exit;
+}    
+
 if ($uri === "/staff" && $method === "DELETE") {
     require_once "controllers/StaffController.php";
     (new StaffController())->delete();
