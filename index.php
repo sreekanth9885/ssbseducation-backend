@@ -1,8 +1,10 @@
 <?php
-require_once "controllers/NotificationController.php";
-require_once "controllers/StaffController.php";
-require_once "controllers/StudentController.php";
-require_once "controllers/CourseController.php";
+require_once __DIR__ . "/controllers/NotificationController.php";
+require_once __DIR__ . "/controllers/StaffController.php";
+require_once __DIR__ . "/controllers/StudentController.php";
+require_once __DIR__ . "/controllers/CourseController.php";
+require_once "controllers/AuthController.php";
+require_once "controllers/DashboardController.php";
 
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
@@ -24,7 +26,6 @@ $method = $_SERVER['REQUEST_METHOD'];
 $uri = str_replace("/api", "", $uri);
 
 // ================= AUTH =================
-require_once "controllers/AuthController.php";
 $authController = new AuthController();
 
 if ($uri === "/login" && $method === "POST") {
@@ -39,72 +40,63 @@ if ($uri === "/me" && $method === "GET") {
 
 // ================= DASHBOARD =================
 if ($uri === "/dashboard" && $method === "GET") {
-    require_once "controllers/DashboardController.php";
     (new DashboardController())->index();
     exit;
 }
 
 // ================= COURSES =================
 if ($uri === "/courses" && $method === "GET") {
-    require_once "controllers/CourseController.php";
     (new CourseController())->index();
     exit;
 }
 
 if ($uri === "/courses" && $method === "POST") {
-    require_once "controllers/CourseController.php";
     (new CourseController())->store();
     exit;
 }
 
 if ($uri === "/courses" && $method === "DELETE") {
-    require_once "controllers/CourseController.php";
     (new CourseController())->delete();
     exit;
 }
 
 // ================= STUDENTS =================
 if ($uri === "/students" && $method === "GET") {
-    require_once "controllers/StudentController.php";
     (new StudentController())->index();
     exit;
 }
 
 if ($uri === "/students" && $method === "POST") {
-    require_once "controllers/StudentController.php";
     (new StudentController())->store();
     exit;
 }
 
 if ($uri === "/students" && $method === "DELETE") {
-    require_once "controllers/StudentController.php";
     (new StudentController())->delete();
     exit;
 }
 // ================= STAFF =================
 if ($uri === "/staff" && $method === "GET") {
-    require_once "controllers/StaffController.php";
     (new StaffController())->index();
     exit;
 }
 
 if ($uri === "/staff" && $method === "POST") {
-    require_once "controllers/StaffController.php";
     (new StaffController())->store();
     exit;
 }
 
 if ($uri === "/staff" && $method === "PUT") {
-    require_once "controllers/StaffController.php";
     (new StaffController())->update();
     exit;
 }    
 
 if ($uri === "/staff" && $method === "DELETE") {
-    require_once "controllers/StaffController.php";
     (new StaffController())->delete();
     exit;
 }
+
+// ================= NOTIFICATIONS =================
 
 // ================= NOTIFICATIONS =================
 
@@ -131,7 +123,6 @@ if (preg_match("/^\/notifications\/(\d+)$/", $uri, $matches)) {
         exit;
     }
 }
-
 // ================= FALLBACK =================
 echo json_encode([
     "status" => false,
