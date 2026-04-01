@@ -10,40 +10,77 @@ class Notification {
         $this->conn = $database->connect();
     }
 
+    // ✅ GET ALL
     public function getAll() {
-    $query = "SELECT * FROM " . $this->table . " ORDER BY created_at DESC";
-    $stmt = $this->conn->prepare($query);
+        $query = "SELECT * FROM " . $this->table . " ORDER BY created_at DESC";
+        $result = $this->conn->query($query);
 
-    /** @var PDOStatement $stmt */
-    $stmt->execute();
+        if (!$result) {
+            die("SQL Error: " . $this->conn->error);
+        }
 
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
+        $data = [];
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
 
+        return $data;
+    }
+
+    // ✅ CREATE
     public function create($title, $content) {
-        $query = "INSERT INTO " . $this->table . " (title, content) VALUES (:title, :content)";
-        $stmt = $this->conn->prepare($query);
-        return $stmt->execute([
-            ":title" => $title,
-            ":content" => $content
-        ]);
+        $stmt = $this->conn->prepare(
+            "INSERT INTO " . $this->table . " (title, content) VALUES (?, ?)"
+        );
+
+        if (!$stmt) {
+            die("Prepare failed: " . $this->conn->error);
+        }
+
+        $stmt->bind_param("ss", $title, $content);
+
+        if (!$stmt->execute()) {
+            die("Execute failed: " . $stmt->error);
+        }
+
+        return true;
     }
 
+    // ✅ UPDATE
     public function update($id, $title, $content) {
-        $query = "UPDATE " . $this->table . " 
-                  SET title = :title, content = :content 
-                  WHERE id = :id";
-        $stmt = $this->conn->prepare($query);
-        return $stmt->execute([
-            ":id" => $id,
-            ":title" => $title,
-            ":content" => $content
-        ]);
+        $stmt = $this->conn->prepare(
+            "UPDATE " . $this->table . " SET title = ?, content = ? WHERE id = ?"
+        );
+
+        if (!$stmt) {
+            die("Prepare failed: " . $this->conn->error);
+        }
+
+        $stmt->bind_param("ssi", $title, $content, $id);
+
+        if (!$stmt->execute()) {
+            die("Execute failed: " . $stmt->error);
+        }
+
+        return true;
     }
 
+    // ✅ DELETE
     public function delete($id) {
-        $query = "DELETE FROM " . $this->table . " WHERE id = :id";
-        $stmt = $this->conn->prepare($query);
-        return $stmt->execute([":id" => $id]);
+        $stmt = $this->conn->prepare(
+            "DELETE FROM " . $this->table . " WHERE id = ?"
+        );
+
+        if (!$stmt) {
+            die("Prepare failed: " . $this->conn->error);
+        }
+
+        $stmt->bind_param("i", $id);
+
+        if (!$stmt->execute()) {
+            die("Execute failed: " . $stmt->error);
+        }
+
+        return true;
     }
 }
