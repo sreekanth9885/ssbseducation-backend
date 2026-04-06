@@ -75,31 +75,72 @@ if ($uri === "/students" && $method === "DELETE") {
     (new StudentController())->delete();
     exit;
 }
+
 // ================= STAFF =================
+// Get all staff or single staff member
 if ($uri === "/staff" && $method === "GET") {
     (new StaffController())->index();
     exit;
 }
 
+// Get single staff member by ID
+if (preg_match("/^\/staff\/(\d+)$/", $uri, $matches) && $method === "GET") {
+    $id = $matches[1];
+    (new StaffController())->show($id);
+    exit;
+}
+
+// Create staff member (supports multipart/form-data for photo upload)
 if ($uri === "/staff" && $method === "POST") {
     (new StaffController())->store();
     exit;
 }
 
+// Update staff member (supports multipart/form-data for photo upload)
 if ($uri === "/staff" && $method === "PUT") {
     (new StaffController())->update();
     exit;
-}    
+}
 
+// Alternative: Update staff member using POST with _method=PUT (for FormData)
+if ($uri === "/staff" && $method === "POST" && isset($_POST['_method']) && $_POST['_method'] === 'PUT') {
+    (new StaffController())->update();
+    exit;
+}
+
+// Delete staff member
 if ($uri === "/staff" && $method === "DELETE") {
     (new StaffController())->delete();
     exit;
 }
 
-// ================= NOTIFICATIONS =================
+// Delete staff member by ID in URL (alternative)
+if (preg_match("/^\/staff\/(\d+)$/", $uri, $matches) && $method === "DELETE") {
+    $_GET['id'] = $matches[1];
+    (new StaffController())->delete();
+    exit;
+}
+
+// Staff photo upload endpoint (dedicated)
+if ($uri === "/staff/upload-photo" && $method === "POST") {
+    (new StaffController())->uploadPhoto();
+    exit;
+}
+
+// Staff photo deletion endpoint
+if ($uri === "/staff/delete-photo" && $method === "POST") {
+    (new StaffController())->deletePhoto();
+    exit;
+}
+
+// Staff photo deletion by ID
+if (preg_match("/^\/staff\/(\d+)\/photo$/", $uri, $matches) && $method === "DELETE") {
+    $_GET['id'] = $matches[1];
+    (new StaffController())->deletePhoto();
+    exit;
+}
 
 // ================= NOTIFICATIONS =================
-
 if ($uri === "/notifications" && $method === "GET") {
     (new NotificationController())->index();
     exit;
@@ -123,9 +164,11 @@ if (preg_match("/^\/notifications\/(\d+)$/", $uri, $matches)) {
         exit;
     }
 }
+
 // ================= FALLBACK =================
 echo json_encode([
     "status" => false,
     "message" => "Route not found",
-    "uri" => $uri
+    "uri" => $uri,
+    "method" => $method
 ]);
