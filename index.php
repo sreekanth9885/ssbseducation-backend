@@ -89,7 +89,11 @@ if (preg_match("/^\/staff\/(\d+)$/", $uri, $matches) && $method === "GET") {
     (new StaffController())->show($id);
     exit;
 }
-
+// Alternative: Update staff member using POST with _method=PUT (for FormData)
+if ($uri === "/staff" && $method === "POST" && isset($_POST['_method']) && $_POST['_method'] === 'PUT') {
+    (new StaffController())->update();
+    exit;
+}
 // Create staff member (supports multipart/form-data for photo upload)
 if ($uri === "/staff" && $method === "POST") {
     (new StaffController())->store();
@@ -102,11 +106,7 @@ if ($uri === "/staff" && $method === "PUT") {
     exit;
 }
 
-// Alternative: Update staff member using POST with _method=PUT (for FormData)
-if ($uri === "/staff" && $method === "POST" && isset($_POST['_method']) && $_POST['_method'] === 'PUT') {
-    (new StaffController())->update();
-    exit;
-}
+
 
 // Delete staff member
 if ($uri === "/staff" && $method === "DELETE") {
