@@ -3,6 +3,7 @@ require_once __DIR__ . "/controllers/NotificationController.php";
 require_once __DIR__ . "/controllers/StaffController.php";
 require_once __DIR__ . "/controllers/StudentController.php";
 require_once __DIR__ . "/controllers/CourseController.php";
+require_once __DIR__ . '/controllers/ContactController.php';
 require_once "controllers/AuthController.php";
 require_once "controllers/DashboardController.php";
 
@@ -163,6 +164,34 @@ if (preg_match("/^\/notifications\/(\d+)$/", $uri, $matches)) {
         (new NotificationController())->delete($id);
         exit;
     }
+}
+
+if (preg_match("/\/contact$/", $uri) && $method === 'POST') {
+    $controller = new ContactController();
+    $controller->save();
+    exit;
+}
+
+// ================= CONTACT =================
+if (preg_match("/\/contact$/", $uri) && $method === 'POST') {
+    (new ContactController())->save();
+    exit;
+}
+
+// GET all messages
+if (preg_match("/\/contact$/", $uri) && $method === 'GET') {
+    (new ContactController())->index();
+    exit;
+}
+
+if (preg_match("/^\/contact\/(\d+)$/", $uri, $matches) && $method === "DELETE") {
+    (new ContactController())->delete($matches[1]);
+    exit;
+}
+
+if ($uri === "/contact/paginate" && $method === "GET") {
+    (new ContactController())->paginate();
+    exit;
 }
 
 // ================= FALLBACK =================
