@@ -13,16 +13,44 @@ class NotificationController {
     }
 
     public function store() {
-        $data = json_decode(file_get_contents("php://input"), true);
 
-        if (!isset($data['title']) || !isset($data['content'])) {
-            http_response_code(400);
-            echo json_encode(["message" => "Invalid data"]);
-            return;
+    $title = $_POST['title'] ?? '';
+    $content = $_POST['content'] ?? '';
+
+    if (empty($title) || empty($content)) {
+        http_response_code(400);
+        echo json_encode(["message" => "Title and content required"]);
+        return;
+    }
+
+    $filePath = null;
+
+    if (isset($_FILES['file']) && $_FILES['file']['error'] === 0) {
+
+        $uploadDir = __DIR__ . "/../uploads/notifications/";
+
+        if (!file_exists($uploadDir)) {
+            mkdir($uploadDir, 0777, true);
         }
 
-        $this->model->create($data['title'], $data['content']);
-        echo json_encode(["message" => "Notification created"]);
+        $fileName = time() . "_" . basename($_FILES['file']['name']);
+        $targetPath = $uploadDir . $fileName;
+
+        if (move_uploaded_file($_FILES['file']['tmp_name'], $targetPath)) {
+            $filePath = "uploads/notifications/" . $fileName;
+        } else {
+            http_response_code(500);
+            echo json_encode(["message" => "File upload failed"]);
+            return;
+        }
+    }
+
+    $this->model->create($title, $content, $filePath);
+
+    echo json_encode([
+        "message" => "Notification created",
+        "file" => $filePath
+    ]);
     }
 
     public function update($id) {
