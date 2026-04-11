@@ -28,23 +28,24 @@ class Notification {
     }
 
     // ✅ CREATE
-    public function create($title, $content) {
-        $stmt = $this->conn->prepare(
-            "INSERT INTO " . $this->table . " (title, content) VALUES (?, ?)"
-        );
+    public function create($title, $content, $file) {
 
-        if (!$stmt) {
-            die("Prepare failed: " . $this->conn->error);
-        }
+    $stmt = $this->conn->prepare(
+        "INSERT INTO " . $this->table . " (title, content, file) VALUES (?, ?, ?)"
+    );
 
-        $stmt->bind_param("ss", $title, $content);
-
-        if (!$stmt->execute()) {
-            die("Execute failed: " . $stmt->error);
-        }
-
-        return true;
+    if (!$stmt) {
+        die("Prepare failed: " . $this->conn->error);
     }
+
+    $stmt->bind_param("sss", $title, $content, $file);
+
+    if (!$stmt->execute()) {
+        die("Execute failed: " . $stmt->error);
+    }
+
+    return true;
+}
 
     // ✅ UPDATE
     public function update($id, $title, $content) {
